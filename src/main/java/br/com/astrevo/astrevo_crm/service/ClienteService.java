@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class ClienteService {
 
@@ -24,5 +26,16 @@ public class ClienteService {
     public Page<InformarClienteDto> buscarClientes(Pageable pageable) {
         Page<Cliente> clientes = clienteRepository.findAll(pageable);
         return clientes.map(InformarClienteDto::new);
+    }
+
+    public InformarClienteDto buscarCliente(UUID id) {
+        return new InformarClienteDto(buscarClienteEntity(id));
+
+    }
+
+    //MÉTODOS AUXILIARES
+    private Cliente buscarClienteEntity(UUID id){
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
     }
 }
