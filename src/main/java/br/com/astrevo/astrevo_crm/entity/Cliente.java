@@ -53,4 +53,15 @@ public class Cliente {
         this.endereco = dto.endereco();
     }
 
+    public void atualizarParcialmente(AtualizarClienteDto dto) {
+        if (dto.contato() != null) this.contato = dto.contato();
+        if (dto.email() != null) this.email = dto.email();
+        if (dto.telefone() != null) this.telefone = dto.telefone();
+        if (dto.documento() != null) this.documento = dto.documento();
+        if (dto.tipoPessoa() != null) this.tipoPessoa = dto.tipoPessoa();
+        if (dto.nomeEmpresa() != null) this.nomeEmpresa = dto.nomeEmpresa();
+        if (dto.status() != null) this.status = dto.status();
+        if (dto.endereco() != null) this.endereco = dto.endereco();
+    }
+
 }

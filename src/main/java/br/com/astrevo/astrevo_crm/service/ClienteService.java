@@ -41,6 +41,13 @@ public class ClienteService {
         return new InformarClienteDto(cliente);
     }
 
+    public InformarClienteDto atualizarParcialmenteCliente(UUID id, AtualizarClienteDto dto) {
+        Cliente cliente = buscarClienteEntity(id);
+        cliente.atualizarParcialmente(dto);
+        clienteRepository.save(cliente);
+        return new InformarClienteDto(cliente);
+    }
+
     //MÉTODOS AUXILIARES
     private Cliente buscarClienteEntity(UUID id){
         return clienteRepository.findById(id)
