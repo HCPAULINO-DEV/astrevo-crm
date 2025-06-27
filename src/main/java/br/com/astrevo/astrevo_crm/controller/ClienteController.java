@@ -47,10 +47,16 @@ public class ClienteController {
         return ResponseEntity.ok(cliente);
     }
 
-    @PatchMapping
+    @PatchMapping("/{id}")
     public ResponseEntity<InformarClienteDto> atualizarParcialmenteCliente(@PathVariable UUID id, @RequestBody AtualizarClienteDto dto){
         var cliente = clienteService.atualizarParcialmenteCliente(id, dto);
         return ResponseEntity.ok(cliente);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deletarCliente(@PathVariable UUID id){
+        clienteService.deletarCliente(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

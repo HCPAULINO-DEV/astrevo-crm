@@ -48,10 +48,14 @@ public class ClienteService {
         return new InformarClienteDto(cliente);
     }
 
+    public void deletarCliente(UUID id) {
+        Cliente cliente = buscarClienteEntity(id);
+        clienteRepository.delete(cliente);
+    }
+
     //MÉTODOS AUXILIARES
     private Cliente buscarClienteEntity(UUID id){
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
     }
-
 }
