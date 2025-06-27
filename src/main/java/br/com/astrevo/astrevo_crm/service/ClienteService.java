@@ -4,6 +4,7 @@ import br.com.astrevo.astrevo_crm.dto.AtualizarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.CadastrarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.InformarClienteDto;
 import br.com.astrevo.astrevo_crm.entity.Cliente;
+import br.com.astrevo.astrevo_crm.infra.exception.ClienteNaoEncontradoException;
 import br.com.astrevo.astrevo_crm.repository.ClienteRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,6 @@ public class ClienteService {
     //MÉTODOS AUXILIARES
     private Cliente buscarClienteEntity(UUID id){
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new ClienteNaoEncontradoException("Cliente não encontrado"));
     }
 }
