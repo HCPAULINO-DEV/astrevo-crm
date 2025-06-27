@@ -1,9 +1,11 @@
 package br.com.astrevo.astrevo_crm.service;
 
+import br.com.astrevo.astrevo_crm.dto.AtualizarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.CadastrarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.InformarClienteDto;
 import br.com.astrevo.astrevo_crm.entity.Cliente;
 import br.com.astrevo.astrevo_crm.repository.ClienteRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +32,13 @@ public class ClienteService {
 
     public InformarClienteDto buscarCliente(UUID id) {
         return new InformarClienteDto(buscarClienteEntity(id));
+    }
 
+    public InformarClienteDto atualizarCliente(UUID id, AtualizarClienteDto dto) {
+        Cliente cliente = buscarClienteEntity(id);
+        cliente.atualizarCliente(dto);
+        clienteRepository.save(cliente);
+        return new InformarClienteDto(cliente);
     }
 
     //MÉTODOS AUXILIARES
@@ -38,4 +46,5 @@ public class ClienteService {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
     }
+
 }

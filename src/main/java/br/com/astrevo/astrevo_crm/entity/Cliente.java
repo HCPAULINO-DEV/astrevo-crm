@@ -1,5 +1,6 @@
 package br.com.astrevo.astrevo_crm.entity;
 
+import br.com.astrevo.astrevo_crm.dto.AtualizarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.CadastrarClienteDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,17 @@ public class Cliente {
     private Endereco endereco;
 
     public Cliente(CadastrarClienteDto dto){
+        this.contato = dto.contato();
+        this.email = dto.email();
+        this.telefone = dto.telefone();
+        this.documento = dto.documento();
+        this.tipoPessoa = dto.tipoPessoa();
+        this.nomeEmpresa = dto.nomeEmpresa();
+        this.status = dto.status();
+        this.endereco = dto.endereco();
+    }
+
+    public void atualizarCliente(AtualizarClienteDto dto) {
         this.contato = dto.contato();
         this.email = dto.email();
         this.telefone = dto.telefone();

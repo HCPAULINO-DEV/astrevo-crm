@@ -1,8 +1,10 @@
 package br.com.astrevo.astrevo_crm.controller;
 
+import br.com.astrevo.astrevo_crm.dto.AtualizarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.CadastrarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.InformarClienteDto;
 import br.com.astrevo.astrevo_crm.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +23,7 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @PostMapping
-    public ResponseEntity<InformarClienteDto> cadastrarCliente(CadastrarClienteDto dto, UriComponentsBuilder uriComponentsBuilder){
+    public ResponseEntity<InformarClienteDto> cadastrarCliente(@RequestBody @Valid CadastrarClienteDto dto, UriComponentsBuilder uriComponentsBuilder){
         var cliente = clienteService.cadastrarCliente(dto);
         var uri = uriComponentsBuilder.path("/clientes/{id}").buildAndExpand(cliente.id()).toUri();
         return ResponseEntity.created(uri).body(cliente);
@@ -36,6 +38,12 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity<InformarClienteDto> buscarCliente(@PathVariable UUID id){
         var cliente = clienteService.buscarCliente(id);
+        return ResponseEntity.ok(cliente);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<InformarClienteDto> atualizarCliente(@PathVariable UUID id, @RequestBody @Valid AtualizarClienteDto dto){
+        var cliente = clienteService.atualizarCliente(id, dto);
         return ResponseEntity.ok(cliente);
     }
 
