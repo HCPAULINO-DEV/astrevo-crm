@@ -34,6 +34,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(DocumentoExistenteException.class)
+    public ResponseEntity<ErrorResponseDTO> handlerDocumentoExistente(DocumentoExistenteException ex){
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.name(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     //MÉTODOS AUXILIARES
     private record ErrorResponseDTO(
             int status_code,

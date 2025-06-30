@@ -7,6 +7,7 @@ import br.com.astrevo.astrevo_crm.entity.Cliente;
 import br.com.astrevo.astrevo_crm.entity.Status;
 import br.com.astrevo.astrevo_crm.infra.exception.ClienteNaoEncontradoException;
 import br.com.astrevo.astrevo_crm.infra.exception.DeletarClienteComStatusInativoException;
+import br.com.astrevo.astrevo_crm.infra.exception.DocumentoExistenteException;
 import br.com.astrevo.astrevo_crm.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,9 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     public InformarClienteDto cadastrarCliente(CadastrarClienteDto dto){
+        if (clienteRepository.existsByDocumento(dto.documento())){
+            throw new DocumentoExistenteException("Documenta já cadastrado");
+        }
         Cliente cliente = new Cliente(dto);
         clienteRepository.save(cliente);
         return new InformarClienteDto(cliente);
@@ -37,6 +41,11 @@ public class ClienteService {
     }
 
     public InformarClienteDto atualizarCliente(UUID id, AtualizarClienteDto dto) {
+        if (dto.documento() != null &&
+                clienteRepository.existsByDocumentoAndIdNot(dto.documento(), id)) {
+            throw new DocumentoExistenteException("Documento já cadastrado por outro cliente");
+        }
+
         Cliente cliente = buscarClienteEntity(id);
         cliente.atualizarCliente(dto);
         clienteRepository.save(cliente);
@@ -44,6 +53,11 @@ public class ClienteService {
     }
 
     public InformarClienteDto atualizarParcialmenteCliente(UUID id, AtualizarClienteDto dto) {
+        if (dto.documento() != null &&
+                clienteRepository.existsByDocumentoAndIdNot(dto.documento(), id)) {
+            throw new DocumentoExistenteException("Documento já cadastrado por outro cliente");
+        }
+
         Cliente cliente = buscarClienteEntity(id);
         cliente.atualizarParcialmente(dto);
         clienteRepository.save(cliente);
