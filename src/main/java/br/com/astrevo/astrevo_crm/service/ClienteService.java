@@ -4,9 +4,10 @@ import br.com.astrevo.astrevo_crm.dto.AtualizarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.CadastrarClienteDto;
 import br.com.astrevo.astrevo_crm.dto.InformarClienteDto;
 import br.com.astrevo.astrevo_crm.entity.Cliente;
+import br.com.astrevo.astrevo_crm.entity.Status;
 import br.com.astrevo.astrevo_crm.infra.exception.ClienteNaoEncontradoException;
+import br.com.astrevo.astrevo_crm.infra.exception.DeletarClienteComStatusInativoException;
 import br.com.astrevo.astrevo_crm.repository.ClienteRepository;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,6 +52,9 @@ public class ClienteService {
 
     public void deletarCliente(UUID id) {
         Cliente cliente = buscarClienteEntity(id);
+        if (cliente.getStatus() != Status.INATIVO){
+            throw new DeletarClienteComStatusInativoException("Para deletar um cliente ele deve ter o satus INATIVO");
+        }
         clienteRepository.delete(cliente);
     }
 

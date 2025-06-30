@@ -12,14 +12,26 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClienteNaoEncontradoException.class)
     public ResponseEntity<ErrorResponseDTO> handleClienteNaoEncontrado(ClienteNaoEncontradoException ex) {
-        var erro = new ErrorResponseDTO(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.name(),
                 ex.getMessage(),
                 LocalDateTime.now()
         );
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(DeletarClienteComStatusInativoException.class)
+    public ResponseEntity<ErrorResponseDTO> handlerDeletarClienteComStatusInativo(DeletarClienteComStatusInativoException ex){
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.name(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     //MÉTODOS AUXILIARES
