@@ -22,10 +22,11 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public InformarClienteDto cadastrarCliente(CadastrarClienteDto dto){
-        if (clienteRepository.existsByDocumento(dto.documento())){
-            throw new DocumentoExistenteException("Documenta já cadastrado");
+    public InformarClienteDto cadastrarCliente(CadastrarClienteDto dto) {
+        if (clienteRepository.existsByDocumento(dto.documento())) {
+            throw new DocumentoExistenteException("Documento já cadastrado");
         }
+
         Cliente cliente = new Cliente(dto);
         clienteRepository.save(cliente);
         return new InformarClienteDto(cliente);
@@ -41,10 +42,7 @@ public class ClienteService {
     }
 
     public InformarClienteDto atualizarCliente(UUID id, AtualizarClienteDto dto) {
-        if (dto.documento() != null &&
-                clienteRepository.existsByDocumentoAndIdNot(dto.documento(), id)) {
-            throw new DocumentoExistenteException("Documento já cadastrado por outro cliente");
-        }
+        validarDocumentoDuplicado(dto.documento(), id);
 
         Cliente cliente = buscarClienteEntity(id);
         cliente.atualizarCliente(dto);
@@ -53,10 +51,7 @@ public class ClienteService {
     }
 
     public InformarClienteDto atualizarParcialmenteCliente(UUID id, AtualizarClienteDto dto) {
-        if (dto.documento() != null &&
-                clienteRepository.existsByDocumentoAndIdNot(dto.documento(), id)) {
-            throw new DocumentoExistenteException("Documento já cadastrado por outro cliente");
-        }
+        validarDocumentoDuplicado(dto.documento(), id);
 
         Cliente cliente = buscarClienteEntity(id);
         cliente.atualizarParcialmente(dto);
@@ -66,15 +61,22 @@ public class ClienteService {
 
     public void deletarCliente(UUID id) {
         Cliente cliente = buscarClienteEntity(id);
-        if (cliente.getStatus() != Status.INATIVO){
-            throw new DeletarClienteComStatusInativoException("Para deletar um cliente ele deve ter o satus INATIVO");
+        if (cliente.getStatus() != Status.INATIVO) {
+            throw new DeletarClienteComStatusInativoException("Cliente só pode ser deletado se estiver com status INATIVO");
         }
         clienteRepository.delete(cliente);
     }
 
-    //MÉTODOS AUXILIARES
-    private Cliente buscarClienteEntity(UUID id){
+    // MÉTODOS AUXILIARES
+
+    private Cliente buscarClienteEntity(UUID id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ClienteNaoEncontradoException("Cliente não encontrado"));
+    }
+
+    private void validarDocumentoDuplicado(String documento, UUID id) {
+        if (documento != null && clienteRepository.existsByDocumentoAndIdNot(documento, id)) {
+            throw new DocumentoExistenteException("Documento já cadastrado por outro cliente");
+        }
     }
 }
