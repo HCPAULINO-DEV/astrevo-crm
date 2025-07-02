@@ -9,6 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.*;
 
 @ActiveProfiles("test")
@@ -198,7 +199,7 @@ public class ClienteTest {
     }
 
     @Test
-    public void deveAtualizarCliente(){
+    public void deveAtualizarCliente() {
         //CADASTRAR CLIENTE
         String contato = "user-test";
         String email = "user-test@email.com";
@@ -271,27 +272,27 @@ public class ClienteTest {
                     }
                 """.formatted(contatoAtualizado, emailAtualizado, telefoneAtualizado, documentoAtualizado, tipoPessoaAtualizado, nomeEmpresaAtualizado, statusAtualizado);
 
-                given()
-                        .contentType("application/json")
-                        .body(jsonAtualizado)
-                        .log().all()
-                        .when()
-                        .put("/clientes/" + idCliente)
-                        .then()
-                        .log().all()
-                        .statusCode(200)
-                        .body("contato", equalTo(contatoAtualizado))
-                        .body("email", equalTo(emailAtualizado))
-                        .body("telefone", equalTo(telefoneAtualizado))
-                        .body("documento", equalTo(documentoAtualizado))
-                        .body("tipoPessoa", equalTo(tipoPessoaAtualizado))
-                        .body("nomeEmpresa", equalTo(nomeEmpresaAtualizado))
-                        .body("status", equalTo(statusAtualizado))
-                        .body("endereco", notNullValue());
+        given()
+                .contentType("application/json")
+                .body(jsonAtualizado)
+                .log().all()
+                .when()
+                .put("/clientes/" + idCliente)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("contato", equalTo(contatoAtualizado))
+                .body("email", equalTo(emailAtualizado))
+                .body("telefone", equalTo(telefoneAtualizado))
+                .body("documento", equalTo(documentoAtualizado))
+                .body("tipoPessoa", equalTo(tipoPessoaAtualizado))
+                .body("nomeEmpresa", equalTo(nomeEmpresaAtualizado))
+                .body("status", equalTo(statusAtualizado))
+                .body("endereco", notNullValue());
     }
 
     @Test
-    public void deveAtualizarParcialmenteCliente(){
+    public void deveAtualizarParcialmenteCliente() {
         //CADASTRAR CLIENTE
         String contato = "user-test";
         String email = "user-test@email.com";
@@ -363,9 +364,61 @@ public class ClienteTest {
                 .body("nomeEmpresa", equalTo(nomeEmpresa))
                 .body("status", equalTo(statusAtualizado))
                 .body("endereco", notNullValue());
-
     }
 
+    @Test
+    public void deveDeletarClientePeloId(){
+        //CADASTRAR CLIENTE
+        String contato = "user-test";
+        String email = "user-test@email.com";
+        String telefone = "(11) 91234-5678";
+        String documento = "123.456.789-00";
+        String tipoPessoa = "FISICA";
+        String nomeEmpresa = "Company Test";
+        String status = "INATIVO";              //NECESSÁRIO SER INATIVO PARA O CLIENTE PODER SER DELETADO
+
+        String json = """
+                    {
+                      "contato": "%s",
+                      "email": "%s",
+                      "telefone": "%s",
+                      "documento": "%s",
+                      "tipoPessoa": "%s",
+                      "nomeEmpresa": "%s",
+                      "status": "%s",
+                      "endereco": {
+                        "cep": "13309-000",
+                        "logradouro": "Rua das Orquídeas",
+                        "numero": "123",
+                        "complemento": "Bloco B, Apto 204",
+                        "bairro": "Jardim Europa",
+                        "cidade": "Itu",
+                        "estado": "SP",
+                        "pais": "Brasil"
+                      }
+                    }
+                """.formatted(contato, email, telefone, documento, tipoPessoa, nomeEmpresa, status);
+
+        String idCliente =
+                given()
+                        .contentType("application/json")
+                        .body(json)
+                        .when()
+                        .post("/clientes")
+                        .then()
+                        .extract()
+                        .path("id");
+
+        //DELETAR CLIENTE
+        given()
+                .log().all()
+                .when()
+                .delete("/clientes/" + idCliente)
+                .then()
+                .log().all()
+                .statusCode(204);
+
+    }
 
 
 }
