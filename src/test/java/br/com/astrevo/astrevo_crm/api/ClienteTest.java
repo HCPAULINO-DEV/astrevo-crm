@@ -8,10 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.UUID;
-
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.post;
 import static org.hamcrest.Matchers.*;
 
 @ActiveProfiles("test")
@@ -291,7 +288,81 @@ public class ClienteTest {
                         .body("nomeEmpresa", equalTo(nomeEmpresaAtualizado))
                         .body("status", equalTo(statusAtualizado))
                         .body("endereco", notNullValue());
+    }
 
+    @Test
+    public void deveAtualizarParcialmenteCliente(){
+        //CADASTRAR CLIENTE
+        String contato = "user-test";
+        String email = "user-test@email.com";
+        String telefone = "(11) 91234-5678";
+        String documento = "123.456.789-00";
+        String tipoPessoa = "FISICA";
+        String nomeEmpresa = "Company Test";
+        String status = "ATIVO";
+
+        String json = """
+                    {
+                      "contato": "%s",
+                      "email": "%s",
+                      "telefone": "%s",
+                      "documento": "%s",
+                      "tipoPessoa": "%s",
+                      "nomeEmpresa": "%s",
+                      "status": "%s",
+                      "endereco": {
+                        "cep": "13309-000",
+                        "logradouro": "Rua das Orquídeas",
+                        "numero": "123",
+                        "complemento": "Bloco B, Apto 204",
+                        "bairro": "Jardim Europa",
+                        "cidade": "Itu",
+                        "estado": "SP",
+                        "pais": "Brasil"
+                      }
+                    }
+                """.formatted(contato, email, telefone, documento, tipoPessoa, nomeEmpresa, status);
+
+        String idCliente =
+                given()
+                        .contentType("application/json")
+                        .body(json)
+                        .when()
+                        .post("/clientes")
+                        .then()
+                        .extract()
+                        .path("id");
+
+        //ATUALIZAR CLIENTE PARCIALMENTE
+        String contatoAtualizado = "user-test-updated";
+        String emailAtualizado = "user-test-updated@email.com";
+        String statusAtualizado = "ATIVO";
+
+        String jsonAtualizado = """
+                    {
+                      "contato": "%s",
+                      "email": "%s",
+                      "status": "%s"
+                    }
+                """.formatted(contatoAtualizado, emailAtualizado, statusAtualizado);
+
+        given()
+                .contentType("application/json")
+                .body(jsonAtualizado)
+                .log().all()
+                .when()
+                .patch("/clientes/" + idCliente)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("contato", equalTo(contatoAtualizado))
+                .body("email", equalTo(emailAtualizado))
+                .body("telefone", equalTo(telefone))
+                .body("documento", equalTo(documento))
+                .body("tipoPessoa", equalTo(tipoPessoa))
+                .body("nomeEmpresa", equalTo(nomeEmpresa))
+                .body("status", equalTo(statusAtualizado))
+                .body("endereco", notNullValue());
 
     }
 
